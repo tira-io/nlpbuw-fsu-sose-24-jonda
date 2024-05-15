@@ -18,7 +18,7 @@ if __name__ == "__main__":
         "nlpbuw-fsu-sose-24", "language-identification-validation-20240429-training"
     )
     print(targets_validation.head())
-    print(targets_validation['lang'].value_counts())
+    print(text_validation.head())
     
     lang_ids = [
         "af",
@@ -44,14 +44,9 @@ if __name__ == "__main__":
     ]
 
     print("preprocessing text data")
-    text_data = text_validation['text'].tolist()
-    if 'lang' in targets_validation.columns:
-        target_labels = targets_validation['lang'].tolist()
-    else:
-        target_label_column = targets_validation.columns.intersection(lang_ids).tolist()
-        if not target_label_column:
-            raise ValueError("No target label column found in the validation data.")
-        target_labels = targets_validation[target_label_column[0]].tolist()
+    text_data = text_validation.iloc[:, 1].tolist()
+    target_labels = targets_validation.iloc[:, 1].tolist()
+
 
     print("Extract features using TF-IDF")
     tfidf_vectorizer = TfidfVectorizer()
