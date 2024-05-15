@@ -17,8 +17,6 @@ if __name__ == "__main__":
     targets_validation = tira.pd.truths(
         "nlpbuw-fsu-sose-24", "language-identification-validation-20240429-training"
     )
-    print(targets_validation.head())
-    print(text_validation.head())
     
     lang_ids = [
         "af",
