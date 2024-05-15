@@ -63,5 +63,5 @@ if __name__ == "__main__":
 
     print("Saving the predictions")
     output_file = get_output_directory(str(Path(__file__).parent)) + "/predictions.jsonl"
-    predictions_df = pd.DataFrame({"id": text_validation["id"], "lang": predictions})
+    predictions_df = pd.DataFrame({"id": text_validation.iloc[:, 0], "lang": predictions})
     predictions_df.to_json(output_file, orient="records", lines=True)
