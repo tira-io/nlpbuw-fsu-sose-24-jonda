@@ -17,6 +17,7 @@ if __name__ == "__main__":
     targets_validation = tira.pd.truths(
         "nlpbuw-fsu-sose-24", "language-identification-validation-20240429-training"
     )
+    print(targets_validation.columns)
     
     lang_ids = [
         "af",
@@ -42,8 +43,8 @@ if __name__ == "__main__":
     ]
 
     print("preprocessing text data")
-    text_data = text_validation["text"].tolist()
-    target_labels = targets_validation["lang"].tolist()
+    text_data = text_validation['text'].tolist()
+    target_labels = targets_validation['lang'].tolist()
 
     print("Extract features using TF-IDF")
     tfidf_vectorizer = TfidfVectorizer()
