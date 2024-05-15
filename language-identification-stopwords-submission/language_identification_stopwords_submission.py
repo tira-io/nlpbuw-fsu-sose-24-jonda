@@ -1,12 +1,9 @@
 from pathlib import Path
-import re
 from tqdm import tqdm
 import pandas as pd
 from tira.rest_api_client import Client
 from tira.third_party_integrations import get_output_directory
-from fastai.text import *
 from collections import Counter
-import json
 
 if __name__ == "__main__":    
 
