@@ -51,7 +51,7 @@ if __name__ == "__main__":
     tfidf_vectors = tfidf_vectorizer.fit_transform(text_data)
 
     print("Training the classifier")
-    svc_classifier = SVC(max_iter=100)
+    svc_classifier = SVC(max_iter=10)
     svc_classifier.fit(tfidf_vectors, target_labels)
 
     print("Predicting the validation data")
