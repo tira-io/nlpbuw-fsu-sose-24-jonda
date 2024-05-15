@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     print("preprocessing text data")
     text_data = text_validation['text'].tolist()
-    target_labels = targets_validation['lang'].tolist()
+    target_labels = targets_validation['lang'].values.tolist()
 
     print("Extract features using TF-IDF")
     tfidf_vectorizer = TfidfVectorizer()
