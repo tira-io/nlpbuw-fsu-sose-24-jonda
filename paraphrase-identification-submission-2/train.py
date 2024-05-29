@@ -1,27 +1,25 @@
-from transformers import BertTokenizer, BertForSequenceClassification, Trainer, TrainingArguments, DataCollatorWithPadding
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, Trainer, TrainingArguments, DataCollatorWithPadding
 import torch
 import pandas as pd
 from tira.rest_api_client import Client
+from sklearn.model_selection import train_test_split
 from datasets import Dataset, DatasetDict
-from tira.third_party_integrations import get_output_directory
-from pathlib import Path
-
-# taken from https://huggingface.co/transformers/v3.0.2/model_doc/bert.html
 
 tira = Client()
 text = tira.pd.inputs("nlpbuw-fsu-sose-24", "paraphrase-identification-train-20240515-training").set_index("id")
 labels = tira.pd.truths("nlpbuw-fsu-sose-24", "paraphrase-identification-train-20240515-training").set_index("id")
 data = text.join(labels).reset_index()
 
-data = data.sample(frac=0.05, random_state=42)  # Use 10% of the data for quick testing
+data = data.sample(frac=0.05, random_state=42) 
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 
 def encode_sentences(examples):
     return tokenizer(examples['sentence1'], examples['sentence2'], truncation=True, padding='max_length', max_length=128)
 
 encoded_data = Dataset.from_pandas(data)
 encoded_data = encoded_data.map(encode_sentences, batched=True)
+
 
 encoded_data = encoded_data.rename_column("label", "labels")
 encoded_data.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
@@ -32,7 +30,7 @@ val_data = train_val_split['test']
 
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
-model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
+model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=2)
 
 training_args = TrainingArguments(
     output_dir='./results',          
@@ -57,6 +55,5 @@ trainer = Trainer(
 
 trainer.train()
 
-dir_out = get_output_directory(str(Path(__file__).parent)) + "/model"
-model.save_pretrained(dir_out)
-tokenizer.save_pretrained(dir_out)
+model.save_pretrained("/code/model")
+tokenizer.save_pretrained("/code/model")
