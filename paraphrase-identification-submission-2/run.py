@@ -5,8 +5,11 @@ from sklearn.metrics import accuracy_score
 from pathlib import Path
 from tira.rest_api_client import Client
 from tira.third_party_integrations import get_output_directory
+import subprocess
 
 # taken from https://huggingface.co/transformers/v3.0.2/model_doc/bert.html
+
+subprocess.run(['python3', '/code/train.py'], check=True)
 
 model = BertForSequenceClassification.from_pretrained("/code/model")
 tokenizer = BertTokenizer.from_pretrained("/code/model")
