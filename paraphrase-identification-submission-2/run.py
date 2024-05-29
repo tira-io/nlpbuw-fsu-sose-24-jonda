@@ -9,16 +9,18 @@ import subprocess
 
 # taken from https://huggingface.co/transformers/v3.0.2/model_doc/bert.html
 
-subprocess.run(['python3', get_output_directory(str(Path(__file__).parent)) + "/code/train.py"], check=True)
+print("Subprocess run")
+subprocess.run(["python", "/code/train.py"], check=True)
+print("Subprocess run finished")
 
 dir_in = get_output_directory(str(Path(__file__).parent)) + "/model"
-model = BertForSequenceClassification.from_pretrained(dir_in)
-tokenizer = BertTokenizer.from_pretrained(dir_in)
+model = BertForSequenceClassification.from_pretrained(dir_in, local_files_only=True)
+tokenizer = BertTokenizer.from_pretrained(dir_in, local_files_only=True)
 
 tira = Client()
 df = tira.pd.inputs("nlpbuw-fsu-sose-24", "paraphrase-identification-validation-20240515-training").set_index("id")
 
-df = df.sample(frac=0.1, random_state=42)
+df = df.sample(frac=0.01, random_state=42)
 
 def encode_sentences(sentence1, sentence2):
     return tokenizer(sentence1, sentence2, truncation=True, padding='max_length', max_length=128, return_tensors='pt')
@@ -37,7 +39,7 @@ df["predicted_label"] = predictions.numpy()  # Rename the prediction column to a
 df = df.drop(columns=["sentence1", "sentence2"]).reset_index()
 
 output_directory = get_output_directory(str(Path(__file__).parent))
-df.to_json(Path(output_directory) / "predictions.jsonl", orient="records", lines=True)
+df.to_json(output_directory + "/predictions.jsonl", orient="records", lines=True)
 
 truth = tira.pd.truths("nlpbuw-fsu-sose-24", "paraphrase-identification-validation-20240515-training").set_index("id")
 
