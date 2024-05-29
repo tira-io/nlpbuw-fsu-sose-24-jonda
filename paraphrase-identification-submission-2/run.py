@@ -6,6 +6,8 @@ from pathlib import Path
 from tira.rest_api_client import Client
 from tira.third_party_integrations import get_output_directory
 
+# taken from https://huggingface.co/transformers/v3.0.2/model_doc/bert.html
+
 model = BertForSequenceClassification.from_pretrained("/code/model")
 tokenizer = BertTokenizer.from_pretrained("/code/model")
 
@@ -27,7 +29,7 @@ with torch.no_grad():
     outputs = model(input_ids, attention_mask=attention_masks)
     predictions = torch.argmax(outputs.logits, dim=1)
 
-df["label"] = predictions.numpy()
+df["predicted_label"] = predictions.numpy()  # Rename the prediction column to avoid conflict
 df = df.drop(columns=["sentence1", "sentence2"]).reset_index()
 
 output_directory = get_output_directory(str(Path(__file__).parent))
@@ -35,7 +37,16 @@ df.to_json(Path(output_directory) / "predictions.jsonl", orient="records", lines
 
 truth = tira.pd.truths("nlpbuw-fsu-sose-24", "paraphrase-identification-validation-20240515-training").set_index("id")
 
+# Print column names to debug
+print("Prediction DataFrame columns:", df.columns)
+print("Truth DataFrame columns:", truth.columns)
+
+# Merge predictions with ground truth
 results = df.set_index("id").join(truth)
 
-accuracy = accuracy_score(results["label"], results["truth"])
+# Print results DataFrame columns to debug
+print("Results DataFrame columns:", results.columns)
+
+# Calculate accuracy
+accuracy = accuracy_score(results["label"], results["predicted_label"])  # Use the renamed column
 print(f"Accuracy: {accuracy:.4f}")

@@ -4,6 +4,8 @@ import pandas as pd
 from tira.rest_api_client import Client
 from datasets import Dataset, DatasetDict
 
+# taken from https://huggingface.co/transformers/v3.0.2/model_doc/bert.html
+
 tira = Client()
 text = tira.pd.inputs("nlpbuw-fsu-sose-24", "paraphrase-identification-train-20240515-training").set_index("id")
 labels = tira.pd.truths("nlpbuw-fsu-sose-24", "paraphrase-identification-train-20240515-training").set_index("id")
