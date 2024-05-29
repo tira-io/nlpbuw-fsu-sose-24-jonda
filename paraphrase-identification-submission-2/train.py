@@ -1,4 +1,4 @@
-from transformers import AlbertTokenizer, AlbertForSequenceClassification, Trainer, TrainingArguments, DataCollatorWithPadding
+from transformers import MobileBertTokenizer, MobileBertForSequenceClassification, Trainer, TrainingArguments, DataCollatorWithPadding
 import torch
 import pandas as pd
 from tira.rest_api_client import Client
@@ -15,7 +15,7 @@ data = text.join(labels).reset_index()
 data = data.sample(frac=0.1, random_state=42)  # Use 10% of the data for quick testing
 
 # Preprocess data
-tokenizer = AlbertTokenizer.from_pretrained('albert-base-v2')
+tokenizer = MobileBertTokenizer.from_pretrained('google/mobilebert-uncased')
 
 def encode_sentences(examples):
     return tokenizer(examples['sentence1'], examples['sentence2'], truncation=True, padding='max_length', max_length=128)
@@ -35,8 +35,8 @@ val_data = train_val_split['test']
 # Define Data Collator
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
-# Fine-tune ALBERT model
-model = AlbertForSequenceClassification.from_pretrained('albert-base-v2', num_labels=2)
+# Fine-tune MobileBERT model
+model = MobileBertForSequenceClassification.from_pretrained('google/mobilebert-uncased', num_labels=2)
 
 training_args = TrainingArguments(
     output_dir='./results',          

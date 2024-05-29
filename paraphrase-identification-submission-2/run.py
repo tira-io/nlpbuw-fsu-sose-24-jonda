@@ -1,5 +1,5 @@
 import subprocess
-from transformers import AlbertTokenizer, AlbertForSequenceClassification
+from transformers import MobileBertTokenizer, MobileBertForSequenceClassification
 import torch
 import pandas as pd
 from sklearn.metrics import accuracy_score
@@ -11,8 +11,8 @@ from tira.third_party_integrations import get_output_directory
 subprocess.run(['python3', '/code/train.py'], check=True)
 
 # Step 2: Load the trained model and tokenizer from the local directory
-model = AlbertForSequenceClassification.from_pretrained("/code/model", local_files_only=True)
-tokenizer = AlbertTokenizer.from_pretrained("/code/model", local_files_only=True)
+model = MobileBertForSequenceClassification.from_pretrained("/code/model", local_files_only=True)
+tokenizer = MobileBertTokenizer.from_pretrained("/code/model", local_files_only=True)
 
 # Step 3: Load the data
 tira = Client()
