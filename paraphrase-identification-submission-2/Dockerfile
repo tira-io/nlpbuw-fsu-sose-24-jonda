@@ -1,8 +1,8 @@
 FROM fschlatt/natural-language-processing-exercises:0.0.1
 
-RUN pip install transformers pandas scikit-learn torch tira datasets
+RUN pip install transformers pandas scikit-learn torch tira datasets gdown
 
-# RUN wget https://drive.google.com/drive/folders/1uj5rsxUj2gJiYrikHb-IM1FXLMEsuIzy?usp=drive_link -o /code/model
+RUN gdown --folder https://drive.google.com/drive/folders/1uj5rsxUj2gJiYrikHb-IM1FXLMEsuIzy?usp=sharing --output /model
 
 ADD run.py /code/run.py
 ADD train.py /code/train.py
