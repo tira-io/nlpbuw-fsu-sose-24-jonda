@@ -14,12 +14,12 @@ def preprocess_text(text):
 def score_sentences(sentences):
     if not sentences:
         return np.array([])
-    tfidf_vectorizer = TfidfVectorizer()
+    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf_vectorizer.fit_transform(sentences)
     sentence_scores = tfidf_matrix.sum(axis=1).flatten()
     return sentence_scores
 
-def summarize_story(story, top_n=2):
+def summarize_story(story, top_n=3):
     sentences = preprocess_text(story)
     if not sentences:
         return "No content available."
@@ -32,11 +32,10 @@ def summarize_story(story, top_n=2):
     return summary
 
 if __name__ == "__main__":
-
     tira = Client()
     df = tira.pd.inputs("nlpbuw-fsu-sose-24", "summarization-validation-20240530-training").set_index("id")
 
-    df["summary"] = df["story"].apply(lambda x: summarize_story(x, top_n=2))
+    df["summary"] = df["story"].apply(lambda x: summarize_story(x, top_n=3))
     df = df.drop(columns=["story"]).reset_index()
 
     output_directory = get_output_directory(str(Path(__file__).parent))
