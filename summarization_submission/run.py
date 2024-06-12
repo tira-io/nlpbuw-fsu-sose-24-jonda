@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from tira.rest_api_client import Client
 from tira.third_party_integrations import get_output_directory
+import networkx as nx
+from sklearn.metrics.pairwise import cosine_similarity
 
 nltk.download('punkt')
 
@@ -11,25 +13,25 @@ def preprocess_text(text):
     sentences = nltk.sent_tokenize(text)
     return sentences
 
-def score_sentences(sentences):
-    if not sentences:
-        return np.array([])
-    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = tfidf_vectorizer.fit_transform(sentences)
-    sentence_scores = tfidf_matrix.sum(axis=1).flatten()
-    return sentence_scores
-
-def summarize_story(story, top_n=3):
-    sentences = preprocess_text(story)
+def textrank_sentences(sentences, top_n=3):
     if not sentences:
         return "No content available."
-    sentence_scores = score_sentences(sentences)
-    if sentence_scores.size == 0:
-        return "No significant content available."
-    ranked_sentences = sorted(((score, sentence) for sentence, score in zip(sentences, sentence_scores)), reverse=True)
+
+    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf_vectorizer.fit_transform(sentences)
+
+    sim_matrix = cosine_similarity(tfidf_matrix)
+    nx_graph = nx.from_numpy_array(sim_matrix)
+    scores = nx.pagerank(nx_graph)
+
+    ranked_sentences = sorted(((scores[i], s) for i, s in enumerate(sentences)), reverse=True)
     top_sentences = [sentence for score, sentence in ranked_sentences[:top_n]]
     summary = ' '.join(top_sentences)
     return summary
+
+def summarize_story(story, top_n=3):
+    sentences = preprocess_text(story)
+    return textrank_sentences(sentences, top_n)
 
 if __name__ == "__main__":
     tira = Client()
