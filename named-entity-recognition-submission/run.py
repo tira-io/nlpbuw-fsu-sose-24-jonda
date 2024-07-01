@@ -11,7 +11,7 @@ if __name__ == "__main__":
     targets_validation = tira.pd.truths("nlpbuw-fsu-sose-24", "ner-validation-20240612-training")
 
     def simple_ner_predictor(sentence):
-        tokens = sentence.split()
+        tokens = sentence.split(' ')
         tags = ['O'] * len(tokens)
         for i, token in enumerate(tokens):
             if token.istitle():
